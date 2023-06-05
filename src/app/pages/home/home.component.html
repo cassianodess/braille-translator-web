@@ -1,0 +1,72 @@
+<div class="container">
+    <mat-form-field style="margin-top: 20px;" class="select">
+        <mat-label>Selecione a forma de entrar os dados</mat-label>
+        <mat-select [value]="selectionType" (valueChange)="setSelectionType($event)">
+            <mat-option value="file">Arquivo</mat-option>
+            <mat-option value="text">Texto</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <ng-container *ngIf="selectionType == 'file'; else elseTemplate">
+        <div class="file-content">
+
+            <div [class]="file && isImage() ? 'crop-container' : ''">
+                <h2 *ngIf="isCropping">Recortar</h2>
+                <image-cropper
+                    style="max-width: 300px;"
+                    *ngIf="file && isImage()"
+                    [imageFile]="croppedImageFile ? croppedImageFile : file"
+                    [containWithinAspectRatio]="false"
+                    [imageChangedEvent]="imageChangedEvent"
+                    [maintainAspectRatio]="false"
+                    [disabled]="!isCropping"
+                    backgroundColor="#dedede"
+                    [aspectRatio]="4 / 3"
+                    (imageCropped)="imageCropped($event)"
+                    (loadImageFailed)="loadImageFailed()"
+                >
+                </image-cropper>
+                
+                <div *ngIf="file && isImage() && isCropping" class="crop-options">
+                    <button (click)="onCancelCrop()" mat-mini-fab color="warn" aria-label="crop image">
+                        <mat-icon>remove</mat-icon>
+                    </button>
+                    <button (click)="onCrop()" mat-mini-fab color="primary" aria-label="crop image">
+                        <mat-icon>check</mat-icon>
+                    </button>
+                </div>
+                <div *ngIf="file && isImage() && !isCropping" class="crop-options">
+                    <button (click)="onUndo()" mat-mini-fab color="accent" aria-label="crop image">
+                        <mat-icon>undo</mat-icon>
+                    </button>
+                </div>
+            </div>
+      
+
+            <h3 *ngIf="file && !isImage()">{{file.name}}</h3>
+            <label *ngIf="!isCropping" id="file-label" for="file">
+                <p class="mdc-button mdc-button--raised mat-mdc-raised-button mat-primary mat-mdc-button-base">Buscar
+                    arquivo</p>
+                <input (change)="onFileChange($event)" accept=".docx, .pdf, .txt, image/*" type="file" name="file"
+                    id="file">
+            </label>
+        </div>
+    </ng-container>
+
+    <ng-template #elseTemplate>
+        <mat-form-field style="padding: 20px;" class="example-full-width">
+            <mat-label>Insira o texto a ser traduzido</mat-label>
+            <textarea (keydown.control.enter)="onSubmit()" rows="12" cdkAutosizeMinRows="12"
+            cdkAutosizeMaxRows="20" cdkTextareaAutosize [formControl]="textArea" name="textarea" id="textarea" matInput
+                placeholder="Ex. It makes me feel..."></textarea>
+        </mat-form-field>
+
+    </ng-template>
+    
+    <button [style]="!validation() ? 'display: none;' : 'background-color: #00C853;'" *ngIf="!isCropping && !isLoading" mat-raised-button color="primary" [disabled]="!validation()"  (click)="onSubmit()"
+    class="translate-button mdc-button mdc-button--raised mat-mdc-raised-button mat-primary mat-mdc-button-base">Traduzir</button>
+    <div *ngIf="isLoading" class="spinner-area">
+        <app-spinner></app-spinner>
+    </div>
+    
+</div>

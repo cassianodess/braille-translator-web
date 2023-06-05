@@ -1,0 +1,15 @@
+<mat-toolbar id="header" color="primary">
+
+    <div class="route" routerLink="/">
+        <ng-container *ngIf="getActivatedRoute() != ''; else elseTemplate">
+            <mat-icon>arrow_back</mat-icon>
+            
+        </ng-container>
+        <ng-template #elseTemplate>
+            <span>Braille Translator</span>
+        </ng-template>
+        
+    </div>
+    <span class="example-spacer"></span>
+    <span class="route" routerLink="/about">sobre</span>
+</mat-toolbar>
